@@ -1,4 +1,5 @@
-import { AdditiveBlending, ArrowHelper, BufferGeometry, Camera, Float32BufferAttribute, PerspectiveCamera, Points, PointsMaterial, Raycaster, Scene, Vector2, WebGLRenderer } from 'three';
+// using version 0.157.0 of ThreeJS
+import { AdditiveBlending, ArrowHelper, BufferGeometry, Camera, Float32BufferAttribute, Mesh, MeshBasicMaterial, PerspectiveCamera, Points, PointsMaterial, Raycaster, Scene, SphereGeometry, Vector2, WebGLRenderer } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import allPointCoords from './AllPoints';
 
@@ -12,6 +13,22 @@ class Viewer {
   raycastArrow?: ArrowHelper;
   colors: number[] = [];
   points?: Points;
+
+
+  initPlanet (scene: Scene) {
+    const material = new MeshBasicMaterial({
+      color: 0x3322ff,
+      depthTest: true,
+      transparent: false
+    });
+
+    const radius = 2;
+    const geometry = new SphereGeometry(radius, 32, 32);
+    const sphere = new Mesh( geometry, material );
+
+    scene.add(sphere);
+  }
+
 
   initPointCloud (scene: Scene) {
     const geometry = new BufferGeometry();
@@ -40,7 +57,8 @@ class Viewer {
       size: 3,
       sizeAttenuation: false,
       vertexColors: true,
-      blending: AdditiveBlending
+      blending: AdditiveBlending,
+      depthTest: true
     });
 
     this.points = new Points( geometry, material );
@@ -73,6 +91,8 @@ class Viewer {
     if (!this.raycaster || !this.scene || !this.camera || !this.canvas) {
       return;
     }
+
+    // adjust this to control the number of point candidates
     this.raycaster.params.Points.threshold = 0.1;
 
     const bounds = this.canvas.getBoundingClientRect();
@@ -82,19 +102,18 @@ class Viewer {
 
     this.raycaster.setFromCamera( mouse, this.camera);
 
-    // if (this.raycastArrow) {
-    //   this.scene.remove(this.raycastArrow);
-    //   this.raycastArrow.dispose();
-    //   this.raycastArrow = undefined;
-    // }
-    // this.raycastArrow = new ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 300, 0xff0000, undefined, 1) ;
-    // this.scene.add(this.raycastArrow);
+    if (this.raycastArrow) {
+      this.scene.remove(this.raycastArrow);
+      this.raycastArrow.dispose();
+      this.raycastArrow = undefined;
+    }
+    this.raycastArrow = new ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 300, 0xffff00, undefined, 1) ;
+    this.scene.add(this.raycastArrow);
 
     const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
     if (intersects.length > 0) {
       console.log('>>>', intersects);
-      // Do stuff
       this.updatePointColours(intersects);
     }
   }
@@ -120,7 +139,6 @@ class Viewer {
     this.camera.zoom = 5;
 
     this.raycaster = new Raycaster();
-    this.raycaster.params.Points.threshold = 0.05;
 
     this.camera.position.y = 42;
     this.controls.minDistance = 4;
@@ -131,9 +149,12 @@ class Viewer {
     this.camera.updateProjectionMatrix();
 
     this.initPointCloud(this.scene);
+    this.initPlanet(this.scene);
 
     this.canvas = this.renderer.domElement;
-    this.canvas.addEventListener('click', this.onClick.bind(this));
+    if (this.canvas) {
+      this.canvas.addEventListener('click', this.onClick.bind(this));
+    }
   }
 
   animate () {
@@ -149,6 +170,8 @@ class Viewer {
   }
 }
 
-const viewer = new Viewer();
-viewer.init();
-viewer.animate();
+document.addEventListener('DOMContentLoaded', () => {
+  const viewer = new Viewer();
+  viewer.init();
+  viewer.animate();
+});
