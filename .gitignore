@@ -1,0 +1,15 @@
+node_modules
+.DS_Store
+logs/
+*.env
+
+# Devenv
+.direnv
+.devenv*
+devenv.local.nix
+
+.devenv
+old
+dist
+tmp
+

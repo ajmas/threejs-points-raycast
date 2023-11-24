@@ -1,0 +1,29 @@
+{
+  "name": "threejs-points-raycast",
+  "version": "0.0.1",
+  "description": "Simple project to explore a raycaster issue",
+  "main": "dist/index.jt",
+  "author": "Andre-John Mas <andrejohn.mas@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.ts,.vue src",
+    "lint:fix": "eslint --fix --ext .js,.ts,.vue sr"
+  },
+  "dependencies": {
+    "three": "^0.157.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.157.0",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@yushijinhun/three-minifier-rollup": "^0.4.0",
+    "eslint": "^8.53.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "rollup-plugin-visualizer": "^5.9.2",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0"
+  }
+}
